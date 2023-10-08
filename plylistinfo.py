@@ -8,18 +8,27 @@ youtube = googleapiclient.discovery.build(api_service_name,api_version,developer
 chnl_id='use channel id'
 playlist_id = 'playlist id'
 
-def channel_details(chnl_id):
-request = youtube.channels().list(
-part="snippet,contentDetails,statistics",
-id=chnl_id
-)
-response = request.execute()
+def pl (chnl_id):
 
-dic = dict(tit = response['items'][0]['snippet']['title'],
-              des = response['items'][0]['snippet']['description'],
-              pub = response['items'][0]['snippet']['publishedAt'],
-              sbc = response['items'][0]['statistics']['subscriberCount'],
-              vic = response['items'][0]['statistics']['videoCount'],
-              vwc = response['items'][0]['statistics']['viewCount'],
-              ply_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads'])
-return dic
+ request = youtube.playlists().list(
+        part="snippet,contentDetails",
+        channelId=chnl_id,
+        maxResults=50
+    )
+ plylst = request.execute()
+
+ playlists = []
+
+ for playlist_item in plylst.get('items', []):
+        playlist_info = {
+            'plylst_id': playlist_item['id'],
+            'Itcnt': playlist_item['contentDetails']['itemCount'],
+            #'kind': playlist_item['kind'],
+            #'chtit': playlist_item['snippet']['channelTitle'],
+            'vidtit': playlist_item['snippet']['title'],
+            'publidate': playlist_item['snippet']['publishedAt'],
+            'videsc': playlist_item['snippet']['localized']['description']
+        }
+        playlists.append(playlist_info)
+
+ return playlists
